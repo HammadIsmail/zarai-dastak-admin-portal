@@ -1,0 +1,48 @@
+<!-- shadcn Skeleton Loading State (Shown while tab data is fetching) -->
+<div x-show="loading[currentTab]" class="space-y-6 animate-pulse" x-cloak>
+  <!-- Skeleton KPI Metric Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <template x-for="i in 4" :key="i">
+      <div class="h-28 rounded-xl border border-border/60 bg-card/60 p-4 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div class="h-3.5 w-24 bg-muted/80 rounded"></div>
+          <div class="h-7 w-7 rounded-lg bg-muted/60"></div>
+        </div>
+        <div class="h-7 w-32 bg-muted/80 rounded"></div>
+        <div class="h-3 w-40 bg-muted/50 rounded"></div>
+      </div>
+    </template>
+  </div>
+
+  <!-- Skeleton Charts or Details Panel (shown for analytics, dashboard, transactions) -->
+  <div x-show="['dashboard', 'transactions', 'analytics'].includes(currentTab)" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="h-72 rounded-xl border border-border/60 bg-card/60 p-5 space-y-4">
+      <div class="h-5 w-40 bg-muted/80 rounded"></div>
+      <div class="h-48 w-full bg-muted/30 rounded-lg"></div>
+    </div>
+    <div class="h-72 rounded-xl border border-border/60 bg-card/60 p-5 space-y-4">
+      <div class="h-5 w-40 bg-muted/80 rounded"></div>
+      <div class="h-48 w-full bg-muted/30 rounded-lg"></div>
+    </div>
+  </div>
+
+  <!-- Skeleton Table or Content Rows -->
+  <div class="rounded-xl border border-border/60 bg-card/60 p-5 space-y-4">
+    <div class="flex items-center justify-between pb-3 border-b border-border/40">
+      <div class="h-5 w-44 bg-muted/80 rounded"></div>
+      <div class="h-8 w-28 bg-muted/60 rounded"></div>
+    </div>
+    <div class="space-y-3">
+      <div class="h-10 w-full bg-muted/50 rounded"></div>
+      <template x-for="i in 6" :key="i">
+        <div class="h-12 w-full bg-muted/20 rounded flex items-center justify-between px-4 gap-4">
+          <div class="h-4 w-32 bg-muted/70 rounded"></div>
+          <div class="h-4 w-28 bg-muted/40 rounded hidden sm:block"></div>
+          <div class="h-5 w-20 bg-muted/60 rounded-full"></div>
+          <div class="h-4 w-36 bg-muted/40 rounded hidden md:block"></div>
+          <div class="h-7 w-20 bg-muted/60 rounded"></div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>

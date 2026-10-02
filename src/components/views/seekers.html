@@ -1,0 +1,62 @@
+<!-- 4. Seekers (Customers) Management -->
+<div x-show="currentTab === 'seekers' && !loading.seekers" class="space-y-4">
+  <div class="card-base p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="input-icon-wrapper flex-1 w-full">
+      <i data-lucide="search"></i>
+      <input type="text" x-model="seekersFilter.search" @input.debounce.300ms="loadSeekers()"
+             placeholder="Search seekers by name, email, or phone…" class="input-base has-left-icon">
+    </div>
+
+    <select x-model="seekersFilter.status" @change="loadSeekers()" class="select-base text-xs h-9 w-40 cursor-pointer">
+      <option value="all">All Statuses</option>
+      <option value="active">Active Only</option>
+      <option value="inactive">Inactive Only</option>
+    </select>
+  </div>
+
+  <div class="table-container">
+    <table class="table-base">
+      <thead class="table-header">
+        <tr>
+          <th class="table-head">Customer Name</th>
+          <th class="table-head">Email</th>
+          <th class="table-head">Phone</th>
+          <th class="table-head">Status</th>
+          <th class="table-head">Registered</th>
+          <th class="table-head text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="s in seekersList" :key="s.id">
+          <tr class="table-row">
+            <td class="table-cell font-medium flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                <span x-text="(s.name || 'S').slice(0, 2)"></span>
+              </div>
+              <span x-text="s.name"></span>
+            </td>
+            <td class="table-cell text-xs" x-text="s.email"></td>
+            <td class="table-cell text-xs text-muted-foreground" x-text="s.phone"></td>
+            <td class="table-cell">
+              <span class="badge-base"
+                    :class="s.isActive ? 'badge-success' : 'badge-danger'"
+                    x-text="s.isActive ? 'Active' : 'Deactivated'"></span>
+            </td>
+            <td class="table-cell text-xs text-muted-foreground" x-text="formatDate(s.createdAt)"></td>
+            <td class="table-cell text-right flex justify-end gap-2">
+              <button @click="toggleSeekerStatus(s.id, !s.isActive)"
+                      class="btn-outline btn-sm cursor-pointer"
+                      :class="s.isActive ? 'text-amber-400 hover:text-amber-300' : 'text-emerald-400 hover:text-emerald-300'">
+                <i data-lucide="power" class="w-3.5 h-3.5"></i>
+                <span x-text="s.isActive ? 'Deactivate' : 'Activate'"></span>
+              </button>
+              <button @click="deleteSeeker(s.id)" class="btn-destructive btn-sm cursor-pointer">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>

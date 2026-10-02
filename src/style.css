@@ -1,0 +1,252 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 6.5%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 6.5%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Haulistry Orange */
+    --primary: 18 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 14%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 18 100% 60%;
+
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased min-h-screen selection:bg-primary selection:text-primary-foreground;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+[x-cloak] { display: none !important; }
+
+/* ── shadcn Component Utilities ────────────────────────────────────────────── */
+
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2 cursor-pointer;
+}
+.btn-primary {
+  @apply btn bg-primary text-primary-foreground shadow hover:bg-primary/90;
+}
+.btn-secondary {
+  @apply btn bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80;
+}
+.btn-outline {
+  @apply btn border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground;
+}
+.btn-destructive {
+  @apply btn bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90;
+}
+.btn-ghost {
+  @apply btn hover:bg-accent hover:text-accent-foreground;
+}
+.btn-sm {
+  @apply h-8 rounded-md px-3 text-xs;
+}
+.btn-lg {
+  @apply h-10 rounded-md px-8;
+}
+.btn-icon {
+  @apply h-9 w-9 p-0;
+}
+
+/* Form Controls */
+.input-base {
+  @apply flex h-9 w-full rounded-md border border-input bg-background/50 px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+/* Input with Icon Wrapper - guarantees icon and placeholder never overlap */
+.input-icon-wrapper {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+.input-icon-wrapper > i,
+.input-icon-wrapper > svg,
+.input-icon-wrapper > [data-lucide],
+.input-icon-wrapper > .lucide {
+  position: absolute !important;
+  left: 0.875rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  pointer-events: none !important;
+  color: hsl(var(--muted-foreground)) !important;
+  z-index: 10 !important;
+}
+.input-icon-wrapper > input,
+.input-icon-wrapper > .input-base,
+.input-icon-wrapper input,
+input.has-left-icon {
+  padding-left: 2.75rem !important;
+}
+.input-icon-wrapper input.has-right-icon,
+input.has-right-icon {
+  padding-right: 2.5rem !important;
+}
+.input-password-toggle {
+  position: absolute !important;
+  right: 0.75rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  color: hsl(var(--muted-foreground)) !important;
+  padding: 0.25rem !important;
+  border-radius: 0.25rem !important;
+  z-index: 20 !important;
+  transition: color 0.15s ease !important;
+}
+.input-password-toggle:hover {
+  color: hsl(var(--foreground)) !important;
+}
+.input-password-toggle svg {
+  width: 1rem !important;
+  height: 1rem !important;
+  pointer-events: none !important;
+}
+
+.select-base {
+  @apply flex h-9 w-full items-center justify-between rounded-md border border-input bg-background/50 px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer;
+}
+.label-base {
+  @apply text-sm font-medium leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+}
+
+/* Cards */
+.card-base {
+  @apply rounded-xl border border-border bg-card text-card-foreground shadow transition-all duration-200;
+}
+.card-hover {
+  @apply card-base hover:border-primary/40 hover:shadow-lg;
+}
+
+/* Badges */
+.badge-base {
+  @apply inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+}
+.badge-primary {
+  @apply badge-base border-transparent bg-primary/20 text-primary border-primary/30;
+}
+.badge-secondary {
+  @apply badge-base border-transparent bg-secondary text-secondary-foreground;
+}
+.badge-outline {
+  @apply badge-base border-border text-foreground;
+}
+.badge-success {
+  @apply badge-base border-emerald-500/30 bg-emerald-500/15 text-emerald-400;
+}
+.badge-warning {
+  @apply badge-base border-amber-500/30 bg-amber-500/15 text-amber-400;
+}
+.badge-danger {
+  @apply badge-base border-rose-500/30 bg-rose-500/15 text-rose-400;
+}
+.badge-info {
+  @apply badge-base border-sky-500/30 bg-sky-500/15 text-sky-400;
+}
+
+/* Tables */
+.table-container {
+  @apply relative w-full overflow-auto rounded-lg border border-border bg-card;
+}
+.table-base {
+  @apply w-full caption-bottom text-sm;
+}
+.table-header {
+  @apply border-b border-border bg-muted/40;
+}
+.table-head {
+  @apply h-10 px-4 text-left align-middle font-medium text-muted-foreground text-xs uppercase tracking-wider;
+}
+.table-row {
+  @apply border-b border-border/60 transition-colors hover:bg-muted/40;
+}
+.table-cell {
+  @apply p-4 align-middle text-sm text-foreground;
+}
+
+/* Tabs */
+.tabs-list {
+  @apply inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground;
+}
+.tabs-trigger {
+  @apply inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-pointer;
+}
+.tabs-trigger-active {
+  @apply bg-background text-foreground shadow-sm;
+}
+
+/* ── shadcn Skeleton Loaders ──────────────────────────────────────────────── */
+.skeleton {
+  @apply animate-pulse rounded-md bg-muted/60;
+}
+.skeleton-text {
+  @apply skeleton h-4 w-full;
+}
+.skeleton-title {
+  @apply skeleton h-6 w-1/3;
+}
+.skeleton-avatar {
+  @apply skeleton rounded-full w-9 h-9;
+}
+.skeleton-btn {
+  @apply skeleton h-9 w-24 rounded-md;
+}
+.skeleton-badge {
+  @apply skeleton h-5 w-16 rounded-full;
+}
+.skeleton-card {
+  @apply skeleton rounded-xl h-28 border border-border/40;
+}

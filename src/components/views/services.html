@@ -1,0 +1,66 @@
+<!-- 5. Services Catalogue -->
+<div x-show="currentTab === 'services' && !loading.services" class="space-y-6">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 card-base p-4 space-y-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="input-icon-wrapper flex-1 w-full">
+          <i data-lucide="search"></i>
+          <input type="text" x-model="servicesFilter.search" @input.debounce.300ms="loadServices()"
+                 placeholder="Filter services by title or provider…" class="input-base has-left-icon">
+        </div>
+        <select x-model="servicesFilter.status" @change="loadServices()" class="select-base text-xs h-9 w-32 cursor-pointer">
+          <option value="All">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table class="table-base">
+          <thead class="table-header">
+            <tr>
+              <th class="table-head">Service</th>
+              <th class="table-head">Category</th>
+              <th class="table-head">Pricing (PKR)</th>
+              <th class="table-head">Provider</th>
+              <th class="table-head">Status</th>
+              <th class="table-head text-right">Toggle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="s in servicesList" :key="s.id">
+              <tr class="table-row">
+                <td class="table-cell font-medium" x-text="s.name"></td>
+                <td class="table-cell">
+                  <span class="badge-outline text-[11px] uppercase font-mono" x-text="s.category"></span>
+                </td>
+                <td class="table-cell text-xs">
+                  <span class="font-bold text-foreground" x-text="formatCurrency(s.basePrice)"></span> base
+                  <span class="text-muted-foreground text-[10px]" x-show="s.pricePerKm"> &middot; <span x-text="formatCurrency(s.pricePerKm)"></span>/km</span>
+                </td>
+                <td class="table-cell text-xs" x-text="s.providerName"></td>
+                <td class="table-cell">
+                  <span class="badge-base"
+                        :class="s.isActive ? 'badge-success' : 'badge-danger'"
+                        x-text="s.isActive ? 'Active' : 'Inactive'"></span>
+                </td>
+                <td class="table-cell text-right">
+                  <button @click="toggleServiceStatus(s.id, !s.isActive)" class="btn-ghost btn-sm cursor-pointer">
+                    <i data-lucide="power" class="w-3.5 h-3.5" :class="s.isActive ? 'text-emerald-400' : 'text-muted-foreground'"></i>
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Categories Breakdown Chart -->
+    <div class="card-base p-5">
+      <h4 class="text-sm font-semibold mb-1">Services by Category</h4>
+      <p class="text-xs text-muted-foreground mb-4">Live breakdown of active catalogue listings</p>
+      <div id="chart-services-category" class="min-h-[240px]"></div>
+    </div>
+  </div>
+</div>

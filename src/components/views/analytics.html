@@ -1,0 +1,43 @@
+<!-- 9. Advanced Analytics -->
+<div x-show="currentTab === 'analytics' && !loading.analytics" class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-base font-semibold">Deep-Dive Analytics & Reports</h3>
+      <p class="text-xs text-muted-foreground">Historical metrics, category volume share, and provider performance</p>
+    </div>
+    <select x-model="analyticsDays" @change="loadAnalytics()" class="select-base text-xs h-9 w-36 cursor-pointer">
+      <option value="7">Last 7 Days</option>
+      <option value="14">Last 14 Days</option>
+      <option value="30">Last 30 Days</option>
+      <option value="60">Last 60 Days</option>
+      <option value="90">Last 90 Days</option>
+    </select>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card-base p-5">
+      <h4 class="text-sm font-semibold mb-1">Booking Volume Timeline</h4>
+      <div id="chart-analytics-trend" class="min-h-[280px]"></div>
+    </div>
+
+    <div class="card-base p-5">
+      <h4 class="text-sm font-semibold mb-1">Booking Status Breakdown</h4>
+      <div id="chart-analytics-status" class="min-h-[280px]"></div>
+    </div>
+
+    <div class="card-base p-5">
+      <h4 class="text-sm font-semibold mb-1">Daily Revenue Pattern</h4>
+      <div id="chart-analytics-revenue" class="min-h-[260px]"></div>
+    </div>
+
+    <div class="card-base p-5">
+      <h4 class="text-sm font-semibold mb-1">Active Services by Category</h4>
+      <div id="chart-analytics-services-cat" class="min-h-[260px]"></div>
+    </div>
+  </div>
+
+  <div class="card-base p-5">
+    <h4 class="text-sm font-semibold mb-1">Top Revenue Providers</h4>
+    <div id="chart-analytics-top-prov" class="min-h-[260px]"></div>
+  </div>
+</div>

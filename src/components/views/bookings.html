@@ -1,0 +1,71 @@
+<!-- 7. Live Bookings Tracker -->
+<div x-show="currentTab === 'bookings' && !loading.bookings" class="space-y-4">
+  <div class="card-base p-4 flex flex-col md:flex-row items-center justify-between gap-3">
+    <div class="input-icon-wrapper flex-1 w-full">
+      <i data-lucide="search"></i>
+      <input type="text" x-model="bookingsFilter.search" @input.debounce.300ms="loadBookings()"
+             placeholder="Search by seeker, provider, service type, or booking ID…" class="input-base has-left-icon">
+    </div>
+
+    <select x-model="bookingsFilter.status" @change="loadBookings()" class="select-base text-xs h-9 w-44 cursor-pointer">
+      <option value="All">All Statuses</option>
+      <option value="pending">Pending</option>
+      <option value="accepted">Accepted</option>
+      <option value="active">Active</option>
+      <option value="provider_arriving">Provider Arriving</option>
+      <option value="in_progress">In Progress</option>
+      <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
+      <option value="rejected">Rejected</option>
+    </select>
+  </div>
+
+  <div class="table-container">
+    <table class="table-base">
+      <thead class="table-header">
+        <tr>
+          <th class="table-head">Booking ID</th>
+          <th class="table-head">Seeker</th>
+          <th class="table-head">Provider</th>
+          <th class="table-head">Service Type</th>
+          <th class="table-head">Status</th>
+          <th class="table-head">Amount (PKR)</th>
+          <th class="table-head">Date</th>
+          <th class="table-head text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="b in bookingsList" :key="b.id">
+          <tr class="table-row">
+            <td class="table-cell font-mono text-xs text-primary" x-text="(b.id || '').slice(0, 8) + '…'"></td>
+            <td class="table-cell font-medium" x-text="b.seekerName"></td>
+            <td class="table-cell" x-text="b.providerName"></td>
+            <td class="table-cell capitalize" x-text="(b.serviceType || '—').replace('_', ' ')"></td>
+            <td class="table-cell">
+              <span class="badge-base"
+                    :class="{
+                      'badge-success': b.status === 'completed',
+                      'badge-warning': b.status === 'pending',
+                      'badge-info': ['active','in_progress','accepted','provider_arriving'].includes(b.status),
+                      'badge-danger': ['cancelled','rejected'].includes(b.status)
+                    }"
+                    x-text="(b.status || '').replace('_', ' ')"></span>
+            </td>
+            <td class="table-cell font-bold text-foreground" x-text="formatCurrency(b.finalPrice || b.estimatedPrice)"></td>
+            <td class="table-cell text-xs text-muted-foreground" x-text="formatDateTime(b.createdAt)"></td>
+            <td class="table-cell text-right flex justify-end gap-1.5">
+              <button @click="inspectBooking(b.id)" class="btn-outline btn-sm cursor-pointer">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              </button>
+              <button x-show="!['completed','cancelled','rejected'].includes(b.status)"
+                      @click="openCancelBookingModal(b.id)"
+                      class="btn-destructive btn-sm cursor-pointer">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>

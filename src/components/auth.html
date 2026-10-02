@@ -1,0 +1,62 @@
+<!-- Authentication Screen (Sign In Only) -->
+<template x-if="!isLoggedIn">
+  <div class="h-screen w-screen overflow-y-auto flex items-center justify-center p-4 bg-gradient-to-b from-background via-slate-900 to-background">
+  <div class="w-full max-w-md card-base p-8 shadow-2xl border-border/80">
+    <!-- Logo Header -->
+    <div class="flex flex-col items-center text-center mb-6">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center shadow-lg shadow-primary/20 mb-3 text-white">
+        <i data-lucide="truck" class="w-7 h-7"></i>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight">Haulistry Admin</h1>
+      <p class="text-xs text-muted-foreground mt-1">Heavy Machinery & Logistics Management Platform</p>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form @submit.prevent="handleLogin" x-data="{ showPassword: false }" class="space-y-4">
+      <div x-show="loginForm.error" class="p-3 rounded-md bg-destructive/15 border border-destructive/30 text-destructive-foreground text-xs flex items-center gap-2">
+        <i data-lucide="alert-triangle" class="w-4 h-4 text-destructive"></i>
+        <span x-text="loginForm.error"></span>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="label-base">Username or Email</label>
+        <div class="input-icon-wrapper">
+          <i data-lucide="users"></i>
+          <input type="text" x-model="loginForm.username" required placeholder="admin or admin@haulistry.com" class="input-base has-left-icon">
+        </div>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="label-base">Password</label>
+        <div class="input-icon-wrapper">
+          <i data-lucide="lock"></i>
+          <input :type="showPassword ? 'text' : 'password'" x-model="loginForm.password" required placeholder="••••••••" class="input-base has-left-icon has-right-icon">
+          <button type="button" @click="showPassword = !showPassword" class="input-password-toggle" :title="showPassword ? 'Hide password' : 'Show password'" :aria-label="showPassword ? 'Hide password' : 'Show password'">
+            <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg x-show="showPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+              <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+              <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+              <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+              <line x1="2" x2="22" y1="2" y2="22"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" :disabled="loginForm.loading" class="btn-primary w-full py-2.5 mt-2">
+        <span x-show="!loginForm.loading">Sign In</span>
+        <span x-show="loginForm.loading" class="flex items-center gap-2">
+          <i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i> Authenticating…
+        </span>
+      </button>
+
+      <p class="text-xs text-center text-muted-foreground mt-4">
+        Default credentials: <code class="text-primary font-mono">admin</code> / <code class="text-primary font-mono">admin123</code>
+      </p>
+    </form>
+  </div>
+</div>
+</template>

@@ -1,0 +1,345 @@
+<!-- ========================================================================= -->
+<!-- MODALS & DRAWERS (SHADCN STYLED)                                          -->
+<!-- ========================================================================= -->
+
+<!-- 1. PROVIDER DETAIL SLIDE-OVER SHEET -->
+<div x-show="providerDetailModal.open" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
+  <div @click="providerDetailModal.open = false" class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity"></div>
+  <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+    <div class="w-screen max-w-2xl bg-card border-l border-border p-6 shadow-2xl flex flex-col space-y-6 overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-border pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">
+            <span x-text="(providerDetailModal.data?.name || 'P').slice(0, 2).toUpperCase()"></span>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold" x-text="providerDetailModal.data?.name"></h3>
+            <p class="text-xs text-muted-foreground" x-text="providerDetailModal.data?.email"></p>
+          </div>
+        </div>
+        <button @click="providerDetailModal.open = false" class="text-muted-foreground hover:text-foreground">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <template x-if="providerDetailModal.loading">
+        <div class="py-20 text-center text-muted-foreground">
+          <i data-lucide="refresh-cw" class="w-8 h-8 animate-spin mx-auto mb-2 text-primary"></i>
+          <p>Loading operator profile…</p>
+        </div>
+      </template>
+
+      <template x-if="!providerDetailModal.loading && providerDetailModal.data">
+        <div class="space-y-6">
+          <!-- Badges & Action Bar -->
+          <div class="flex items-center justify-between p-3 rounded-lg bg-muted">
+            <div class="flex gap-2">
+              <span class="badge-base"
+                    :class="providerDetailModal.data.isVerified ? 'badge-success' : 'badge-warning'"
+                    x-text="providerDetailModal.data.isVerified ? 'Verified Operator' : 'Unverified'"></span>
+              <span class="badge-base"
+                    :class="providerDetailModal.data.isActive ? 'badge-info' : 'badge-danger'"
+                    x-text="providerDetailModal.data.isActive ? 'Active' : 'Inactive'"></span>
+            </div>
+            <div class="flex gap-2">
+              <button @click="toggleProviderStatus(providerDetailModal.data.id, !providerDetailModal.data.isActive)"
+                      class="btn-outline btn-sm">
+                <i data-lucide="power" class="w-3.5 h-3.5"></i>
+                <span x-text="providerDetailModal.data.isActive ? 'Deactivate' : 'Activate'"></span>
+              </button>
+              <button @click="deleteProvider(providerDetailModal.data.id)" class="btn-destructive btn-sm">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Performance Metrics -->
+          <div class="grid grid-cols-3 gap-3" x-show="providerDetailModal.performance">
+            <div class="card-base p-3 text-center">
+              <p class="text-[11px] text-muted-foreground font-medium">Completed Jobs</p>
+              <p class="text-lg font-bold text-emerald-400 mt-1" x-text="providerDetailModal.performance?.completedJobs || 0"></p>
+            </div>
+            <div class="card-base p-3 text-center">
+              <p class="text-[11px] text-muted-foreground font-medium">Gross Earnings</p>
+              <p class="text-lg font-bold text-foreground mt-1" x-text="formatCurrency(providerDetailModal.performance?.totalEarnings)"></p>
+            </div>
+            <div class="card-base p-3 text-center">
+              <p class="text-[11px] text-muted-foreground font-medium">Customer Rating</p>
+              <p class="text-lg font-bold text-amber-400 mt-1 flex items-center justify-center gap-1">
+                <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                <span x-text="Number(providerDetailModal.performance?.avgRating || 0).toFixed(1)"></span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Profile Info Table -->
+          <div class="space-y-2">
+            <h4 class="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Applicant Dossier</h4>
+            <div class="table-container">
+              <table class="table-base">
+                <tbody>
+                  <tr class="table-row">
+                    <td class="table-cell font-medium text-xs text-muted-foreground w-1/3">Phone Number</td>
+                    <td class="table-cell text-xs" x-text="providerDetailModal.data.phone || '—'"></td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell font-medium text-xs text-muted-foreground">CNIC Number</td>
+                    <td class="table-cell text-xs" x-text="providerDetailModal.data.cnic || '—'"></td>
+                  </tr>
+                  <tr class="table-row">
+                    <td class="table-cell font-medium text-xs text-muted-foreground">Member Since</td>
+                    <td class="table-cell text-xs" x-text="formatDate(providerDetailModal.data.createdAt)"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Documents Review -->
+          <div class="space-y-2">
+            <h4 class="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Submitted Credentials</h4>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button @click="openLightbox(providerDetailModal.data.cnicFrontImageBase64, 'CNIC Front')"
+                      :disabled="!providerDetailModal.data.cnicFrontImageBase64"
+                      class="btn-outline btn-sm h-12 flex flex-col items-center justify-center gap-1 text-[11px]">
+                <i data-lucide="file-text" class="w-4 h-4"></i> CNIC Front
+              </button>
+              <button @click="openLightbox(providerDetailModal.data.cnicBackImageBase64, 'CNIC Back')"
+                      :disabled="!providerDetailModal.data.cnicBackImageBase64"
+                      class="btn-outline btn-sm h-12 flex flex-col items-center justify-center gap-1 text-[11px]">
+                <i data-lucide="file-text" class="w-4 h-4"></i> CNIC Back
+              </button>
+              <button @click="openLightbox(providerDetailModal.data.licenseImageBase64, 'Driving License')"
+                      :disabled="!providerDetailModal.data.licenseImageBase64"
+                      class="btn-outline btn-sm h-12 flex flex-col items-center justify-center gap-1 text-[11px]">
+                <i data-lucide="file-text" class="w-4 h-4"></i> License
+              </button>
+              <button @click="openLightbox(providerDetailModal.data.vehicleImageBase64, 'Vehicle Image')"
+                      :disabled="!providerDetailModal.data.vehicleImageBase64"
+                      class="btn-outline btn-sm h-12 flex flex-col items-center justify-center gap-1 text-[11px]">
+                <i data-lucide="truck" class="w-4 h-4"></i> Vehicle
+              </button>
+            </div>
+          </div>
+
+          <!-- Vehicles Fleet -->
+          <div class="space-y-2" x-show="providerDetailModal.data.vehicles?.length">
+            <h4 class="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Registered Vehicles</h4>
+            <div class="table-container">
+              <table class="table-base text-xs">
+                <thead class="table-header">
+                  <tr>
+                    <th class="table-head">Type</th>
+                    <th class="table-head">Plate</th>
+                    <th class="table-head">Availability</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <template x-for="v in providerDetailModal.data.vehicles" :key="v.id">
+                    <tr class="table-row">
+                      <td class="table-cell capitalize" x-text="(v.type || '').replace('_', ' ')"></td>
+                      <td class="table-cell font-mono" x-text="v.number"></td>
+                      <td class="table-cell">
+                        <span class="badge-base" :class="v.isAvailable ? 'badge-success' : 'badge-danger'" x-text="v.isAvailable ? 'Available' : 'Busy'"></span>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</div>
+
+<!-- 2. REJECT PROVIDER MODAL -->
+<div x-show="rejectModal.open" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" x-cloak>
+  <div @click.away="rejectModal.open = false" class="card-base p-6 w-full max-w-md shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h4 class="font-bold text-base text-destructive flex items-center gap-2">
+        <i data-lucide="alert-triangle" class="w-5 h-5"></i> Reject Application
+      </h4>
+      <button @click="rejectModal.open = false" class="text-muted-foreground hover:text-foreground">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <p class="text-xs text-muted-foreground mb-3">
+      Specify the reason why <strong class="text-foreground" x-text="rejectModal.providerName"></strong>'s application is not approved. This will be sent directly to the provider via push notification.
+    </p>
+
+    <div class="space-y-1.5 mb-4">
+      <label class="label-base">Reason for Rejection</label>
+      <textarea x-model="rejectModal.reason" rows="3"
+                placeholder="e.g. Expired driving license, blurry CNIC document, invalid vehicle registration…"
+                class="input-base h-24 py-2 resize-none"></textarea>
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button @click="rejectModal.open = false" class="btn-outline btn-sm">Cancel</button>
+      <button @click="submitReject()" class="btn-destructive btn-sm">Confirm Rejection</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. CANCEL BOOKING MODAL -->
+<div x-show="cancelBookingModal.open" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" x-cloak>
+  <div @click.away="cancelBookingModal.open = false" class="card-base p-6 w-full max-w-md shadow-2xl">
+    <h4 class="font-bold text-base text-destructive mb-2 flex items-center gap-2">
+      <i data-lucide="x-circle" class="w-5 h-5"></i> Cancel Active Booking
+    </h4>
+    <p class="text-xs text-muted-foreground mb-4">
+      Are you sure you want to administratively cancel this booking? This will terminate the dispatch workflow.
+    </p>
+    <div class="space-y-1.5 mb-4">
+      <label class="label-base">Cancellation Reason</label>
+      <input type="text" x-model="cancelBookingModal.reason" placeholder="e.g. Disputed quote, customer request…" class="input-base">
+    </div>
+    <div class="flex justify-end gap-2">
+      <button @click="cancelBookingModal.open = false" class="btn-outline btn-sm">Back</button>
+      <button @click="submitCancelBooking()" class="btn-destructive btn-sm">Confirm Cancellation</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. PROVIDER EARNINGS BREAKDOWN MODAL -->
+<div x-show="providerEarningsModal.open" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" x-cloak>
+  <div @click.away="providerEarningsModal.open = false" class="card-base p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
+    <div class="flex items-center justify-between border-b border-border pb-3">
+      <div>
+        <h4 class="font-bold text-base" x-text="providerEarningsModal.summary?.name + ' — Financial Ledger'"></h4>
+        <p class="text-xs text-muted-foreground" x-text="providerEarningsModal.summary?.email"></p>
+      </div>
+      <button @click="providerEarningsModal.open = false" class="text-muted-foreground hover:text-foreground">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Financial Metrics -->
+    <div class="grid grid-cols-4 gap-3">
+      <div class="card-base p-3 text-center">
+        <p class="text-[10px] text-muted-foreground uppercase">Gross Bookings</p>
+        <p class="text-base font-bold mt-1" x-text="formatCurrency(providerEarningsModal.summary?.grossEarnings)"></p>
+      </div>
+      <div class="card-base p-3 text-center">
+        <p class="text-[10px] text-muted-foreground uppercase">Platform Fee (10%)</p>
+        <p class="text-base font-bold text-primary mt-1" x-text="formatCurrency(providerEarningsModal.summary?.commission)"></p>
+      </div>
+      <div class="card-base p-3 text-center">
+        <p class="text-[10px] text-muted-foreground uppercase">Net Payout (90%)</p>
+        <p class="text-base font-bold text-emerald-400 mt-1" x-text="formatCurrency(providerEarningsModal.summary?.netEarnings)"></p>
+      </div>
+      <div class="card-base p-3 text-center">
+        <p class="text-[10px] text-muted-foreground uppercase">Active Pipeline</p>
+        <p class="text-base font-bold text-amber-400 mt-1" x-text="formatCurrency(providerEarningsModal.summary?.pendingValue)"></p>
+      </div>
+    </div>
+
+    <!-- Monthly Revenue Chart -->
+    <div class="card-base p-4">
+      <h5 class="text-xs font-semibold mb-2">Monthly Completed Earnings</h5>
+      <div id="chart-provider-monthly" class="min-h-[220px]"></div>
+    </div>
+
+    <!-- Transaction Records -->
+    <div>
+      <h5 class="text-xs font-semibold mb-2">Recent Transactions</h5>
+      <div class="table-container">
+        <table class="table-base text-xs">
+          <thead class="table-header">
+            <tr>
+              <th class="table-head">Booking ID</th>
+              <th class="table-head">Customer</th>
+              <th class="table-head">Service</th>
+              <th class="table-head">Status</th>
+              <th class="table-head">Amount</th>
+              <th class="table-head">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-for="t in providerEarningsModal.transactions" :key="t.id">
+              <tr class="table-row">
+                <td class="table-cell font-mono text-primary" x-text="(t.id || '').slice(0, 8)"></td>
+                <td class="table-cell" x-text="t.seekerName"></td>
+                <td class="table-cell capitalize" x-text="(t.serviceType || '—').replace('_', ' ')"></td>
+                <td class="table-cell">
+                  <span class="badge-base"
+                        :class="t.status === 'completed' ? 'badge-success' : 'badge-warning'"
+                        x-text="t.status"></span>
+                </td>
+                <td class="table-cell font-bold" x-text="formatCurrency(t.amount)"></td>
+                <td class="table-cell text-muted-foreground" x-text="formatDate(t.createdAt)"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. SEND PUSH NOTIFICATION MODAL -->
+<div x-show="sendNotifModal.open" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" x-cloak>
+  <div @click.away="sendNotifModal.open = false" class="card-base p-6 w-full max-w-md shadow-2xl space-y-4">
+    <div class="flex items-center justify-between border-b border-border pb-3">
+      <h4 class="font-bold text-base flex items-center gap-2">
+        <i data-lucide="bell" class="w-4 h-4 text-primary"></i> Dispatch Push Notification
+      </h4>
+      <button @click="sendNotifModal.open = false" class="text-muted-foreground hover:text-foreground">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <form @submit.prevent="submitSendNotification()" class="space-y-3">
+      <div class="space-y-1">
+        <label class="label-base">Recipient User ID</label>
+        <input type="text" x-model="sendNotifModal.userId" required placeholder="User or Provider ID" class="input-base">
+      </div>
+
+      <div class="space-y-1">
+        <label class="label-base">Notification Type</label>
+        <select x-model="sendNotifModal.type" class="select-base text-xs">
+          <option value="admin_notification">System Alert</option>
+          <option value="booking_update">Booking Update</option>
+          <option value="payment">Payment Alert</option>
+          <option value="promo">Promo Announcement</option>
+        </select>
+      </div>
+
+      <div class="space-y-1">
+        <label class="label-base">Title</label>
+        <input type="text" x-model="sendNotifModal.title" required placeholder="Important Account Notice" class="input-base">
+      </div>
+
+      <div class="space-y-1">
+        <label class="label-base">Body Message</label>
+        <textarea x-model="sendNotifModal.body" required rows="3" placeholder="Message content delivered to device…" class="input-base h-20 py-2 resize-none"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" @click="sendNotifModal.open = false" class="btn-outline btn-sm">Cancel</button>
+        <button type="submit" :disabled="sendNotifModal.loading" class="btn-primary btn-sm">
+          <i data-lucide="bell" class="w-3.5 h-3.5"></i> Send Push
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 6. DOCUMENT LIGHTBOX MODAL -->
+<div x-show="lightbox.open" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md" x-cloak>
+  <div class="relative max-w-4xl w-full flex flex-col items-center">
+    <div class="w-full flex items-center justify-between text-white mb-3 px-2">
+      <h4 class="text-sm font-semibold flex items-center gap-2" x-text="lightbox.title"></h4>
+      <button @click="lightbox.open = false" class="p-1 rounded-md hover:bg-white/20 text-white transition-colors">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <div class="bg-card border border-border rounded-xl overflow-hidden max-h-[80vh] flex items-center justify-center p-2">
+      <img :src="lightbox.src" alt="Document inspection" class="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl">
+    </div>
+  </div>
+</div>

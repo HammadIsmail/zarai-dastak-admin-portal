@@ -1,0 +1,154 @@
+<!-- Mobile Backdrop -->
+<div x-show="mobileMenuOpen" @click="mobileMenuOpen = false" class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" x-cloak></div>
+
+<!-- Sidebar Navigation (Separate scrollable container) -->
+<aside class="fixed inset-y-0 left-0 z-50 w-64 md:relative md:w-64 h-full border-r border-border bg-card/70 flex flex-col shrink-0 overflow-hidden shadow-2xl md:shadow-none"
+       :class="{ 'hidden md:flex': !mobileMenuOpen, 'flex': mobileMenuOpen }">
+  <!-- Brand Header -->
+  <div class="h-16 px-5 border-b border-border flex items-center justify-between shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-white shadow-sm">
+        <i data-lucide="truck" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <span class="font-bold text-sm tracking-tight text-foreground block">Haulistry</span>
+        <span class="text-[10px] font-medium text-muted-foreground uppercase tracking-wider block">Admin Suite</span>
+      </div>
+    </div>
+    <!-- Close button on mobile -->
+    <button @click="mobileMenuOpen = false" class="md:hidden text-muted-foreground hover:text-foreground">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+    <div class="text-[11px] font-semibold text-muted-foreground/70 uppercase px-3 py-1.5 tracking-wider">Main</div>
+    <button @click="setTab('dashboard')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'dashboard' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+      <span>Dashboard</span>
+    </button>
+
+    <button @click="setTab('verifications')"
+            class="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'verifications' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <div class="flex items-center gap-3">
+        <i data-lucide="shield-check" class="w-4 h-4"></i>
+        <span>Verifications</span>
+      </div>
+      <span x-show="stats.pendingVerifications > 0"
+            class="badge-warning text-[10px] px-1.5 py-0.2"
+            x-text="stats.pendingVerifications"></span>
+    </button>
+
+    <div class="text-[11px] font-semibold text-muted-foreground/70 uppercase px-3 pt-3 py-1.5 tracking-wider">Management</div>
+
+    <button @click="setTab('providers')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'providers' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="hard-hat" class="w-4 h-4"></i>
+      <span>Providers</span>
+    </button>
+
+    <button @click="setTab('seekers')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'seekers' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="users" class="w-4 h-4"></i>
+      <span>Seekers</span>
+    </button>
+
+    <button @click="setTab('services')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'services' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="wrench" class="w-4 h-4"></i>
+      <span>Services</span>
+    </button>
+
+    <button @click="setTab('vehicles')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'vehicles' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="truck" class="w-4 h-4"></i>
+      <span>Vehicles</span>
+    </button>
+
+    <button @click="setTab('bookings')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'bookings' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="calendar-check" class="w-4 h-4"></i>
+      <span>Bookings</span>
+    </button>
+
+    <div class="text-[11px] font-semibold text-muted-foreground/70 uppercase px-3 pt-3 py-1.5 tracking-wider">Financials & Reports</div>
+
+    <button @click="setTab('transactions')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'transactions' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="receipt" class="w-4 h-4"></i>
+      <span>Transactions</span>
+    </button>
+
+    <button @click="setTab('analytics')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'analytics' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="trending-up" class="w-4 h-4"></i>
+      <span>Analytics</span>
+    </button>
+
+    <div class="text-[11px] font-semibold text-muted-foreground/70 uppercase px-3 pt-3 py-1.5 tracking-wider">Operations</div>
+
+    <button @click="setTab('notifications')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'notifications' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="bell" class="w-4 h-4"></i>
+      <span>Notifications</span>
+    </button>
+
+    <button @click="setTab('complaints')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'complaints' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+      <span>Complaints</span>
+    </button>
+
+    <button @click="setTab('audit')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'audit' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="scroll-text" class="w-4 h-4"></i>
+      <span>Audit Logs</span>
+    </button>
+
+    <div class="text-[11px] font-semibold text-muted-foreground/70 uppercase px-3 pt-3 py-1.5 tracking-wider">System</div>
+
+    <button @click="setTab('users')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'users' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="user-check" class="w-4 h-4"></i>
+      <span>Admin Users</span>
+    </button>
+
+    <button @click="setTab('settings')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+            :class="currentTab === 'settings' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'">
+      <i data-lucide="settings" class="w-4 h-4"></i>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- Sidebar Footer / Admin Profile -->
+  <div class="p-3 border-t border-border bg-card/30 flex items-center justify-between shrink-0">
+    <div class="flex items-center gap-2.5 overflow-hidden">
+      <div class="w-8 h-8 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs uppercase shrink-0">
+        <span x-text="(user.username || 'A').slice(0, 2)"></span>
+      </div>
+      <div class="min-w-0">
+        <p class="text-xs font-semibold text-foreground truncate" x-text="user.username"></p>
+        <p class="text-[10px] text-muted-foreground truncate" x-text="user.email || 'Administrator'"></p>
+      </div>
+    </div>
+    <button @click="logout()" title="Sign Out" class="text-muted-foreground hover:text-destructive p-1.5 rounded-md hover:bg-muted transition-colors cursor-pointer">
+      <i data-lucide="log-out" class="w-4 h-4"></i>
+    </button>
+  </div>
+</aside>

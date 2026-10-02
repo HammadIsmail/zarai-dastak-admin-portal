@@ -1,0 +1,97 @@
+<!-- 8. Transactions & Provider Earnings -->
+<div x-show="currentTab === 'transactions' && !loading.transactions" class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div class="tabs-list">
+      <button @click="txTab = 'overview'; loadTransactions()" class="tabs-trigger cursor-pointer" :class="txTab === 'overview' && 'tabs-trigger-active'">
+        Platform Financial Overview
+      </button>
+      <button @click="txTab = 'providers'; loadTransactions()" class="tabs-trigger cursor-pointer" :class="txTab === 'providers' && 'tabs-trigger-active'">
+        Provider Earnings Ledger
+      </button>
+    </div>
+
+    <div x-show="txTab === 'overview'" class="flex items-center gap-2">
+      <span class="text-xs text-muted-foreground">Range:</span>
+      <select x-model="txDays" @change="loadTransactions()" class="select-base text-xs h-8 w-28 cursor-pointer">
+        <option value="7">7 Days</option>
+        <option value="30">30 Days</option>
+        <option value="90">90 Days</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- TAB 1: Platform Financial Overview -->
+  <div x-show="txTab === 'overview'" class="space-y-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card-base p-5">
+        <p class="text-xs font-medium text-muted-foreground">Gross Platform Revenue</p>
+        <div class="text-2xl font-bold mt-2" x-text="formatCurrency(txOverview.grossRevenue)"></div>
+        <p class="text-[11px] text-muted-foreground mt-1">100% Contract Value</p>
+      </div>
+
+      <div class="card-base p-5">
+        <p class="text-xs font-medium text-muted-foreground">Platform Fee (10%)</p>
+        <div class="text-2xl font-bold mt-2 text-primary" x-text="formatCurrency(txOverview.platformCommission)"></div>
+        <p class="text-[11px] text-muted-foreground mt-1">Platform Take Rate</p>
+      </div>
+
+      <div class="card-base p-5">
+        <p class="text-xs font-medium text-muted-foreground">Disbursed to Providers (90%)</p>
+        <div class="text-2xl font-bold mt-2 text-emerald-400" x-text="formatCurrency(txOverview.netToProviders)"></div>
+        <p class="text-[11px] text-muted-foreground mt-1">Provider Net Payouts</p>
+      </div>
+
+      <div class="card-base p-5">
+        <p class="text-xs font-medium text-muted-foreground">Completed Bookings</p>
+        <div class="text-2xl font-bold mt-2 text-sky-400" x-text="formatNumber(txOverview.completedBookings)"></div>
+        <p class="text-[11px] text-muted-foreground mt-1">Settled & Closed</p>
+      </div>
+    </div>
+
+    <!-- Revenue Trend Line -->
+    <div class="card-base p-5">
+      <h4 class="text-sm font-semibold mb-1">Settled Revenue Trend</h4>
+      <p class="text-xs text-muted-foreground mb-4">Completed order payments over selected period</p>
+      <div id="chart-transactions-daily" class="min-h-[260px]"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: Provider Earnings Table -->
+  <div x-show="txTab === 'providers'" class="space-y-4">
+    <div class="table-container">
+      <table class="table-base">
+        <thead class="table-header">
+          <tr>
+            <th class="table-head">Provider Name</th>
+            <th class="table-head">Completed Jobs</th>
+            <th class="table-head">Gross Bookings</th>
+            <th class="table-head">Platform Fee (10%)</th>
+            <th class="table-head">Net Earnings (90%)</th>
+            <th class="table-head">Pending Pipeline</th>
+            <th class="table-head text-right">Ledger</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="p in providersEarnings" :key="p.providerId">
+            <tr class="table-row">
+              <td class="table-cell font-medium">
+                <p x-text="p.providerName"></p>
+                <p class="text-xs text-muted-foreground" x-text="p.providerEmail"></p>
+              </td>
+              <td class="table-cell font-semibold" x-text="p.completedBookings"></td>
+              <td class="table-cell font-bold" x-text="formatCurrency(p.grossEarnings)"></td>
+              <td class="table-cell text-primary font-medium" x-text="formatCurrency(p.commission)"></td>
+              <td class="table-cell text-emerald-400 font-bold" x-text="formatCurrency(p.netEarnings)"></td>
+              <td class="table-cell text-xs text-muted-foreground" x-text="`${p.pendingBookings} jobs (${formatCurrency(p.pendingValue)})`"></td>
+              <td class="table-cell text-right">
+                <button @click="inspectProviderEarnings(p.providerId)" class="btn-outline btn-sm cursor-pointer">
+                  <i data-lucide="receipt" class="w-3.5 h-3.5"></i> Breakdown
+                </button>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

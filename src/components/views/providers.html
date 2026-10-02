@@ -1,0 +1,78 @@
+<!-- 3. Providers Management -->
+<div x-show="currentTab === 'providers' && !loading.providers" class="space-y-4">
+  <!-- Filter Bar -->
+  <div class="card-base p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="input-icon-wrapper flex-1 w-full">
+      <i data-lucide="search"></i>
+      <input type="text" x-model="providersFilter.search" @input.debounce.300ms="loadProviders()"
+             placeholder="Search providers by name, email, or phone…" class="input-base has-left-icon">
+    </div>
+
+    <div class="flex items-center gap-2 w-full sm:w-auto">
+      <select x-model="providersFilter.status" @change="loadProviders()" class="select-base text-xs h-9 w-40 cursor-pointer">
+        <option value="all">All Statuses</option>
+        <option value="verified">Verified Only</option>
+        <option value="unverified">Unverified Only</option>
+        <option value="active">Active Only</option>
+        <option value="inactive">Inactive Only</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Providers Table -->
+  <div class="table-container">
+    <table class="table-base">
+      <thead class="table-header">
+        <tr>
+          <th class="table-head">Provider</th>
+          <th class="table-head">Contact</th>
+          <th class="table-head">Verification</th>
+          <th class="table-head">Status</th>
+          <th class="table-head">Rating</th>
+          <th class="table-head">Joined</th>
+          <th class="table-head text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="p in providersList" :key="p.id">
+          <tr class="table-row">
+            <td class="table-cell">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                  <span x-text="(p.name || 'P').slice(0, 2)"></span>
+                </div>
+                <span class="font-medium" x-text="p.name"></span>
+              </div>
+            </td>
+            <td class="table-cell">
+              <p class="text-xs" x-text="p.email"></p>
+              <p class="text-[11px] text-muted-foreground" x-text="p.phone"></p>
+            </td>
+            <td class="table-cell">
+              <span class="badge-base"
+                    :class="p.isVerified ? 'badge-success' : 'badge-warning'"
+                    x-text="p.isVerified ? 'Verified' : 'Unverified'"></span>
+            </td>
+            <td class="table-cell">
+              <span class="badge-base"
+                    :class="p.isActive ? 'badge-info' : 'badge-danger'"
+                    x-text="p.isActive ? 'Active' : 'Inactive'"></span>
+            </td>
+            <td class="table-cell">
+              <div class="flex items-center gap-1 text-amber-400 font-semibold text-xs">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <span x-text="Number(p.rating || 0).toFixed(1)"></span>
+              </div>
+            </td>
+            <td class="table-cell text-xs text-muted-foreground" x-text="formatDate(p.createdAt)"></td>
+            <td class="table-cell text-right">
+              <button @click="inspectProvider(p.id)" class="btn-outline btn-sm cursor-pointer">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Inspect
+              </button>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>

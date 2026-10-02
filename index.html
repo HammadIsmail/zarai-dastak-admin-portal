@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Haulistry Admin Portal — Heavy Fleet & Logistics Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body x-data="adminApp()" x-cloak class="bg-background text-foreground h-screen w-screen overflow-hidden flex flex-col">
+
+  <!-- Toast Notifications Stack -->
+  <include src="./src/components/toast.html" />
+
+  <!-- Authentication Screen (Sign In & Sign Up) -->
+  <include src="./src/components/auth.html" />
+
+  <!-- Main Authenticated Layout -->
+  <template x-if="isLoggedIn">
+    <div class="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-background">
+
+      <!-- Sidebar Navigation (Independent scroll container) -->
+      <include src="./src/components/sidebar.html" />
+
+      <!-- Main Content Area (Independent scroll container) -->
+      <div class="flex-1 h-full flex flex-col min-w-0 bg-background overflow-hidden">
+
+        <!-- Top Header Bar (Fixed / Sticky at Top) -->
+        <include src="./src/components/topbar.html" />
+
+        <!-- View Body (Independently Scrollable Container) -->
+        <main class="flex-1 p-6 overflow-y-auto space-y-6">
+
+          <!-- Skeleton Loading Screen -->
+          <include src="./src/components/skeleton.html" />
+
+          <!-- Views (Rendered conditionally via Alpine x-show) -->
+          <include src="./src/components/views/dashboard.html" />
+          <include src="./src/components/views/verifications.html" />
+          <include src="./src/components/views/providers.html" />
+          <include src="./src/components/views/seekers.html" />
+          <include src="./src/components/views/services.html" />
+          <include src="./src/components/views/vehicles.html" />
+          <include src="./src/components/views/bookings.html" />
+          <include src="./src/components/views/transactions.html" />
+          <include src="./src/components/views/analytics.html" />
+          <include src="./src/components/views/notifications.html" />
+          <include src="./src/components/views/complaints.html" />
+          <include src="./src/components/views/audit.html" />
+          <include src="./src/components/views/users.html" />
+          <include src="./src/components/views/settings.html" />
+
+        </main>
+      </div>
+    </div>
+  </template>
+
+  <!-- Modals, Drawers & Lightboxes -->
+  <include src="./src/components/modals.html" />
+
+  <!-- Main JavaScript Entrypoint -->
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

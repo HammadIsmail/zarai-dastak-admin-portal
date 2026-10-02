@@ -1,0 +1,56 @@
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 14. SETTINGS & PROFILE SECURITY                                     -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div x-show="currentTab === 'settings'" class="space-y-6 max-w-4xl">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Admin Profile Card -->
+    <div class="card-base p-6 text-center space-y-4">
+      <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-orange-600 mx-auto flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-primary/20">
+        <span x-text="(user.username || 'A').slice(0, 2).toUpperCase()"></span>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold" x-text="user.username"></h3>
+        <p class="text-xs text-muted-foreground" x-text="user.email || 'System Administrator'"></p>
+      </div>
+      <div class="p-3 bg-muted rounded-lg text-left text-xs space-y-1.5">
+        <div class="flex justify-between">
+          <span class="text-muted-foreground">Account Role:</span>
+          <strong class="capitalize" x-text="user.role || 'Admin'"></strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-muted-foreground">Auth Security:</span>
+          <span class="text-emerald-400 font-semibold flex items-center gap-1">
+            <i data-lucide="lock" class="w-3 h-3"></i> Authenticated
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Change Card -->
+    <div class="md:col-span-2 card-base p-6 space-y-4">
+      <h4 class="text-base font-semibold">Change Security Password</h4>
+      <p class="text-xs text-muted-foreground">Keep your administrative credentials safe with a strong passphrase.</p>
+
+      <form @submit.prevent="handleChangePassword" class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="label-base">Current Password</label>
+          <input type="password" x-model="passwordForm.current" required placeholder="••••••••" class="input-base">
+        </div>
+        <div class="space-y-1.5">
+          <label class="label-base">New Password (Min 8 Characters)</label>
+          <input type="password" x-model="passwordForm.new" required placeholder="••••••••" class="input-base">
+        </div>
+        <div class="space-y-1.5">
+          <label class="label-base">Confirm New Password</label>
+          <input type="password" x-model="passwordForm.confirm" required placeholder="••••••••" class="input-base">
+        </div>
+
+        <button type="submit" :disabled="passwordForm.loading" class="btn-primary">
+          <i data-lucide="key" class="w-4 h-4"></i>
+          <span x-show="!passwordForm.loading">Update Password</span>
+          <span x-show="passwordForm.loading">Updating…</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

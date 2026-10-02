@@ -1,0 +1,58 @@
+<!-- 10. Notifications Dispatcher & Log -->
+<div x-show="currentTab === 'notifications' && !loading.notifications" class="space-y-4">
+  <div class="card-base p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="input-icon-wrapper flex-1 w-full">
+      <i data-lucide="search"></i>
+      <input type="text" x-model="notifsFilter.search" @input.debounce.300ms="loadNotifications()"
+             placeholder="Search notifications by title or message…" class="input-base has-left-icon">
+    </div>
+
+    <div class="flex items-center gap-2">
+      <select x-model="notifsFilter.type" @change="loadNotifications()" class="select-base text-xs h-9 w-36 cursor-pointer">
+        <option value="All">All Types</option>
+        <option value="booking_update">Booking Update</option>
+        <option value="new_booking">New Booking</option>
+        <option value="payment">Payment</option>
+        <option value="system">System</option>
+        <option value="promo">Promo</option>
+      </select>
+
+      <button @click="sendNotifModal.open = true" class="btn-primary btn-sm cursor-pointer">
+        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Dispatch Push
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="table-base">
+      <thead class="table-header">
+        <tr>
+          <th class="table-head">Title</th>
+          <th class="table-head">Message Body</th>
+          <th class="table-head">Type</th>
+          <th class="table-head">Recipient ID</th>
+          <th class="table-head">Read State</th>
+          <th class="table-head">Dispatched</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="n in notifsList" :key="n.id">
+          <tr class="table-row">
+            <td class="table-cell font-medium" x-text="n.title"></td>
+            <td class="table-cell text-xs text-muted-foreground max-w-xs truncate" x-text="n.body"></td>
+            <td class="table-cell">
+              <span class="badge-outline text-[11px] uppercase font-mono" x-text="(n.type || '').replace('_', ' ')"></span>
+            </td>
+            <td class="table-cell font-mono text-xs text-muted-foreground" x-text="(n.userId || '').slice(0, 10) + '…'"></td>
+            <td class="table-cell">
+              <span class="badge-base"
+                    :class="n.isRead ? 'badge-success' : 'badge-warning'"
+                    x-text="n.isRead ? 'Read' : 'Unread'"></span>
+            </td>
+            <td class="table-cell text-xs text-muted-foreground" x-text="formatDateTime(n.createdAt)"></td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>

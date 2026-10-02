@@ -1,0 +1,100 @@
+<!-- 11. Complaints & Disputes -->
+<div x-show="currentTab === 'complaints' && !loading.complaints" class="space-y-6">
+  <div class="tabs-list">
+    <button @click="complaintsTab = 'low_ratings'" class="tabs-trigger cursor-pointer" :class="complaintsTab === 'low_ratings' && 'tabs-trigger-active'">
+      Low-Rated Reviews (&le; 2 Stars) (<span x-text="complaintsData.counts.lowRatings || 0"></span>)
+    </button>
+    <button @click="complaintsTab = 'cancelled'" class="tabs-trigger cursor-pointer" :class="complaintsTab === 'cancelled' && 'tabs-trigger-active'">
+      Cancelled Bookings (<span x-text="complaintsData.counts.cancelled || 0"></span>)
+    </button>
+    <button @click="complaintsTab = 'rejected'" class="tabs-trigger cursor-pointer" :class="complaintsTab === 'rejected' && 'tabs-trigger-active'">
+      Rejected Bookings (<span x-text="complaintsData.counts.rejected || 0"></span>)
+    </button>
+  </div>
+
+  <!-- Low-Rated Reviews -->
+  <div x-show="complaintsTab === 'low_ratings'" class="space-y-3">
+    <template x-if="complaintsData.lowRatings.length === 0">
+      <div class="card-base p-12 text-center text-muted-foreground">
+        <i data-lucide="check-circle-2" class="w-8 h-8 mx-auto mb-2 text-emerald-400"></i>
+        <p class="font-medium">No low-rated reviews found! Customer satisfaction is high.</p>
+      </div>
+    </template>
+
+    <template x-for="r in complaintsData.lowRatings" :key="r.id">
+      <div class="card-base p-5 border-l-4 border-l-destructive">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1 text-destructive font-bold text-sm">
+            <template x-for="i in Number(r.rating || 1)" :key="i">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+            </template>
+            <span class="ml-1" x-text="r.rating + ' / 5.0'"></span>
+          </div>
+          <span class="text-xs text-muted-foreground" x-text="formatDateTime(r.createdAt)"></span>
+        </div>
+        <p class="text-sm text-foreground my-2" x-text="r.comment || 'No comment provided.'"></p>
+        <div class="text-xs text-muted-foreground flex gap-4 mt-2">
+          <span>Reviewer: <strong class="capitalize" x-text="(r.reviewerType || '').replace('_', ' ')"></strong></span>
+          <span>Provider ID: <code class="font-mono" x-text="(r.providerId || '').slice(0, 8)"></code></span>
+          <span>Booking ID: <code class="font-mono" x-text="(r.bookingId || '').slice(0, 8)"></code></span>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- Cancelled Bookings -->
+  <div x-show="complaintsTab === 'cancelled'" class="space-y-4">
+    <div class="table-container">
+      <table class="table-base">
+        <thead class="table-header">
+          <tr>
+            <th class="table-head">Booking ID</th>
+            <th class="table-head">Seeker</th>
+            <th class="table-head">Provider</th>
+            <th class="table-head">Cancellation Reason</th>
+            <th class="table-head">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="c in complaintsData.cancelledBookings" :key="c.id">
+            <tr class="table-row">
+              <td class="table-cell font-mono text-xs text-primary" x-text="(c.id || '').slice(0, 8) + '…'"></td>
+              <td class="table-cell" x-text="c.seekerName"></td>
+              <td class="table-cell" x-text="c.providerName"></td>
+              <td class="table-cell text-rose-400 font-medium text-xs" x-text="c.cancellationReason || 'Unspecified'"></td>
+              <td class="table-cell text-xs text-muted-foreground" x-text="formatDateTime(c.updatedAt || c.createdAt)"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Rejected Bookings -->
+  <div x-show="complaintsTab === 'rejected'" class="space-y-4">
+    <div class="table-container">
+      <table class="table-base">
+        <thead class="table-header">
+          <tr>
+            <th class="table-head">Booking ID</th>
+            <th class="table-head">Seeker</th>
+            <th class="table-head">Provider</th>
+            <th class="table-head">Service Type</th>
+            <th class="table-head">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="r in complaintsData.rejectedBookings" :key="r.id">
+            <tr class="table-row">
+              <td class="table-cell font-mono text-xs text-primary" x-text="(r.id || '').slice(0, 8) + '…'"></td>
+              <td class="table-cell" x-text="r.seekerName"></td>
+              <td class="table-cell" x-text="r.providerName"></td>
+              <td class="table-cell capitalize" x-text="(r.serviceType || '—').replace('_', ' ')"></td>
+              <td class="table-cell text-xs text-muted-foreground" x-text="formatDateTime(r.updatedAt || r.createdAt)"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

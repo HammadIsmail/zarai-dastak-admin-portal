@@ -1,0 +1,57 @@
+<!-- 13. Admin Users & Accounts -->
+<div x-show="currentTab === 'users' && !loading.users" class="space-y-6">
+  <div class="card-base p-4 flex items-center justify-between">
+    <div>
+      <h4 class="text-sm font-semibold">Authorized Administrative Accounts</h4>
+      <p class="text-xs text-muted-foreground">Manage administrator permissions and dashboard access</p>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="table-base">
+      <thead class="table-header">
+        <tr>
+          <th class="table-head">Administrator</th>
+          <th class="table-head">Email Address</th>
+          <th class="table-head">Role</th>
+          <th class="table-head">Status</th>
+          <th class="table-head">Created</th>
+          <th class="table-head text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="adm in adminUsersList" :key="adm.id">
+          <tr class="table-row">
+            <td class="table-cell font-medium">
+              <div class="inline-flex items-center gap-2">
+                <span x-text="adm.username"></span>
+                <span x-show="adm.username === user.username" class="badge-primary text-[10px]">You</span>
+              </div>
+            </td>
+            <td class="table-cell text-xs" x-text="adm.email"></td>
+            <td class="table-cell text-xs capitalize" x-text="adm.role || 'Admin'"></td>
+            <td class="table-cell">
+              <span class="badge-base"
+                    :class="adm.isActive ? 'badge-success' : 'badge-danger'"
+                    x-text="adm.isActive ? 'Active' : 'Disabled'"></span>
+            </td>
+            <td class="table-cell text-xs text-muted-foreground" x-text="formatDate(adm.createdAt)"></td>
+            <td class="table-cell text-right space-x-2">
+              <button x-show="adm.username !== user.username"
+                      @click="toggleAdminUser(adm.id, !adm.isActive)"
+                      class="btn-outline btn-sm cursor-pointer">
+                <i data-lucide="power" class="w-3.5 h-3.5"></i>
+                <span x-text="adm.isActive ? 'Disable' : 'Enable'"></span>
+              </button>
+              <button x-show="adm.username !== user.username"
+                      @click="deleteAdminUser(adm.id)"
+                      class="btn-destructive btn-sm cursor-pointer">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>
